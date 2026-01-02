@@ -1,5 +1,5 @@
 const express=require("express");
-const { validateSignUpData } = require("../utils/validation");
+const { validateSignUpData, getJsonWebToken } = require("../utils/validation");
 const bcrypt=require("bcrypt");
 const { User } = require("../models/user");
 
@@ -22,5 +22,41 @@ authRoutes.post("/signup", async(req, res)=>{
         });
     }
 });
+
+authRoutes.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        if(!email && !password){
+            return res.status(400).json({
+                success: false,
+                message: "Please provide email and password"
+            });
+        }
+        const loginUser = await User.findOne({ email });
+        if (!loginUser) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found, please signup"
+            });
+        }
+        const isPasswordMatched = await bcrypt.compare(password, loginUser.password);
+        if (!isPasswordMatched) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+        const token = await getJsonWebToken(loginUser._id);
+        res.cookie("token", token)
+        res.status(200).json({
+            success:true,
+            message:"User logged in successfully",
+            user:loginUser,
+        })
+    } catch (err) {
+        res.status(400).send("Something went wrong", err.message);
+    }
+
+})
 
 module.exports={authRoutes};

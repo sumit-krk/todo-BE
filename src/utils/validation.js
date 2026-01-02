@@ -1,4 +1,6 @@
 const validator=require("validator");
+const config = require("../config/config");
+const jwt=require("jsonwebtoken");
 
 const validateSignUpData=(req)=>{
     const {firstName, lastName, email, password}=req.body;
@@ -17,4 +19,9 @@ const validationEditProfileData = (req) => {
     return isEditAllowed;
 }
 
-module.exports={validateSignUpData, validationEditProfileData}
+const getJsonWebToken = async (userID) => {
+    const token = await jwt.sign({_id: userID}, `${config.jwtSecret}`);
+    return token;
+}
+
+module.exports={validateSignUpData, validationEditProfileData, getJsonWebToken}
