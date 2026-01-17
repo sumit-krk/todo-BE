@@ -20,7 +20,7 @@ const validationEditProfileData = (req) => {
 }
 
 const getJsonWebToken = async (userID) => {
-    const token = await jwt.sign({_id: userID}, `${config.jwtSecret}`);
+    const token = await jwt.sign({_id: userID}, `${config.jwtSecret}`, {expiresIn: "7d"});
     return token;
 }
 
