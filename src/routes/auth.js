@@ -59,8 +59,8 @@ authRoutes.post("/login", async (req, res) => {
       // ⭐ FIXED COOKIE
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,      // ❗ localhost ke liye
-            sameSite: "lax",    // ❗ localhost ke liye
+            secure: true,
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
   
